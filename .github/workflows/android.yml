@@ -1,0 +1,38 @@
+name: Build APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. التحقق من المستودع
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. إعداد Java و Android SDK
+    - name: Setup JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+
+    - name: Install Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        api-level: 33
+        build-tools: 33.0.0
+
+    # 3. بناء التطبيق
+    - name: Build APK
+      run: ./gradlew assembleDebug
+
+    # 4. رفع ملف APK إلى GitHub
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: EVStationFinder-APK
+        path: app/build/outputs/apk/debug/*.apk
